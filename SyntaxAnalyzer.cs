@@ -20,7 +20,7 @@ namespace Compiler
         public NodeVariableList tempPVNode = null;
 
         public LinkedPolishList linkedPolishL = new LinkedPolishList();
-        //public LinkedPolishList pP = null;
+
         int errorValue;
         int tempNumRow;
         int tempToken;
@@ -311,24 +311,30 @@ namespace Compiler
                 p = p.Next;
                 if (p != null && p.token == 100) // Id
                 {
-                    //Added for incompatibility of types and U2
-                    linkedPolishL.PushNodePolish(p.token, p.lexeme);
-                    p = p.Next;
-
-                    //if (p != null && p.token == 128)
-                    //{
-                    //    Read();
-                    //}
-                    if (p != null && p.token == 120)//;
+                    if (IsDeclared(p.lexeme))
                     {
                         //Added for incompatibility of types and U2
-                        PopNodesToPolishList();
+                        linkedPolishL.PushNodePolish(p.token, p.lexeme);
                         p = p.Next;
+
+                        if (p != null && p.token == 120)//;
+                        {
+                            //Added for incompatibility of types and U2
+                            PopNodesToPolishList();
+                            p = p.Next;
+                        }
+                        else
+                        {
+                            PrintError("Semicolon");
+                        }
                     }
                     else
                     {
-                        PrintError("Semicolon");
+                        errorValue = 506;
+                        PrintErrorMessage(p.lexeme, p.row);
+                        syntaxError = true;
                     }
+                    
                 }
                 else
                 {
@@ -346,29 +352,58 @@ namespace Compiler
             if (p != null && p.token == 127) // Output Stream <<
             {
                 p = p.Next;
-                if (p != null && (p.token == 126 || p.token == 100 || p.token == 240)) // String or Variable or Endl
+                if (p != null && (p.token == 126 || p.token == 100)) // String or Variable or Endl
                 {
-                    //Added for incompatibility of types and U2
-                    linkedPolishL.PushNodePolish(tempToken, p.lexeme);
-                    p = p.Next;
-                    if (p != null && p.token == 127)//<<
-                    {
-                        Write();
-                    }
-                    else if (p != null && p.token == 120)//;
+                    if(p.token == 126)
                     {
                         //Added for incompatibility of types and U2
-                        PopNodesToPolishList();
+                        linkedPolishL.PushNodePolish(tempToken, p.lexeme);
                         p = p.Next;
+                        if (p != null && p.token == 127)//<<
+                        {
+                            Write();
+                        }
+                        else if (p != null && p.token == 120)//;
+                        {
+                            //Added for incompatibility of types and U2
+                            PopNodesToPolishList();
+                            p = p.Next;
+                        }
+                        else
+                        {
+                            PrintError("Semicolon");
+                        }
+                    }else if(p.token == 100 && IsDeclared(p.lexeme))
+                    {
+                        //Added for incompatibility of types and U2
+                        linkedPolishL.PushNodePolish(tempToken, p.lexeme);
+                        p = p.Next;
+                        if (p != null && p.token == 127)//<<
+                        {
+                            Write();
+                        }
+                        else if (p != null && p.token == 120)//;
+                        {
+                            //Added for incompatibility of types and U2
+                            PopNodesToPolishList();
+                            p = p.Next;
+                        }
+                        else
+                        {
+                            PrintError("Semicolon");
+                        }
                     }
                     else
                     {
-                        PrintError("Semicolon");
+                        errorValue = 506;
+                        PrintErrorMessage(p.lexeme, p.row);
+                        syntaxError = true;
                     }
+                    
                 }
                 else
                 {
-                    PrintError("Complete string, Variable, or Endl");
+                    PrintError("Complete string, Variable");
                 }
             }
             else
@@ -682,9 +717,9 @@ namespace Compiler
 
         string[,] errors ={
         //      0                                 1
-        {"Error Variable no declarada",       "506"},
+        {"Error Variable no declarada",           "506"},
         {"Error Variable Multideclarada"  ,       "507"},
-        {"Error de incompatibilidad"    ,       "508"},
+        {"Error de incompatibilidad"    ,         "508"},
     };
 
         private void PrintErrorMessage(string lexeme, int numLine)
