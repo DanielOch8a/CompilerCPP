@@ -798,20 +798,7 @@ namespace Compiler
                 pV = node;
             }
         }
-        //public void PushNodePolish(int type, string lexeme)
-        //{
-        //    LinkedPolishList node = new LinkedPolishList(lexeme, type);
-        //    if (headP == null)
-        //    {
-        //        headP = node;
-        //        pP = headP;
-        //    }
-        //    else
-        //    {
-        //        pP.Next = node;
-        //        pP = node;
-        //    }
-        //}
+
         public void PrintVariableNodes()
         {
             Console.WriteLine("-----------------------------------------");
@@ -851,19 +838,6 @@ namespace Compiler
                 linkedPolishL.PushNodePolish(tempNode.token, tempNode.lexeme);
             }
         }
-        //Added for incompatibility of types and U2
-        //public void PrintPolishNodes()
-        //{
-        //    Console.WriteLine("-----------------------------------------");
-        //    Console.WriteLine("Polish list");
-        //    Console.WriteLine("-----------------------------------------");
-        //    pP = headP;
-        //    while (pP != null)
-        //    {
-        //        Console.WriteLine("|Type {0,0}| Lexeme {1,0}|", pP.type, pP.lexeme);
-        //        pP = pP.Next;
-        //    }
-        //}
-        //Added for incompatibility of types
+
     }
 }
