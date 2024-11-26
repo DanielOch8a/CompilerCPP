@@ -401,70 +401,7 @@ namespace Compiler
                     || p.token == 102/*decimal*/ || p.token == 225/*true*/
                     || p.token == 226/*false*/)
                 {
-
-
-
-
-
-                    ////U3 OPTIMIZATION
-                    //if (p.token == 101)//digit
-                    //{
-                    //    if (p.Next.token == 103/*+*/)
-                    //    {
-                    //        if (p.Next.Next.token == 101)//digit
-                    //        {
-                    //            int tempV = Int32.Parse(p.lexeme) + Int32.Parse(p.Next.Next.lexeme);
-                    //            PushNodePolish(p.token, tempV.ToString());
-                    //            p = p.Next.Next;
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        //Added for incompatibility of types and U2
-                    //        PushNodePolish(p.token, p.lexeme);
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    //Added for incompatibility of types and U2
-                    //    PushNodePolish(p.token, p.lexeme);
-                    //}
-
-                    ////U3 OPTIMIZATION
-                    if (p.token == 101 && p.Next.Next.token == 101)//digit
-                    {
-                        switch (p.Next.token)
-                        {
-                            case 103: //+
-                                if (p.Next.Next.token == 101)//digit
-                                {
-                                    int tempV = Int32.Parse(p.lexeme) + Int32.Parse(p.Next.Next.lexeme);
-                                    PushNodePolish(p.token, tempV.ToString());
-                                    p = p.Next.Next;
-                                }
-                                break;
-                            case 105: //*
-                                if (p.Next.Next.token == 101)//digit
-                                {
-                                    int tempV = Int32.Parse(p.lexeme) * Int32.Parse(p.Next.Next.lexeme);
-                                    PushNodePolish(p.token, tempV.ToString());
-                                    p = p.Next.Next;
-                                }
-                                break;
-                            default:
-                                PushNodePolish(p.token, p.lexeme);
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        //Added for incompatibility of types and U2
-                        PushNodePolish(p.token, p.lexeme);
-                    }
-
-
-
-
+                    PushNodePolish(p.token, p.lexeme);
                     p = p.Next;
                     if (p != null && (p.token == 103/*+*/ || p.token == 104/*-*/
                         || p.token == 105/* * */ || p.token == 106/* / */))
