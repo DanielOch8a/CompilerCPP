@@ -19,8 +19,8 @@ namespace Compiler
         public NodeVariableList tempPNode = null;
         public NodeVariableList tempPVNode = null;
 
-        public NodePolish headP = null;
-        public NodePolish pP = null;
+        public LinkedPolishList linkedPolishL = new LinkedPolishList();
+        //public LinkedPolishList pP = null;
         int errorValue;
         int tempNumRow;
         int tempToken;
@@ -115,7 +115,7 @@ namespace Compiler
                 }
 
                 PrintVariableNodes();
-                PrintPolishNodes();
+                linkedPolishL.PrintPolishNodes();
             }
             else
             {
@@ -196,7 +196,7 @@ namespace Compiler
                         if (IsDeclared(p.lexeme))
                         {
                             Console.WriteLine("|Variable {0,0}| initialized on line {1,-2} |", p.lexeme, p.row);
-                            PushNodePolish(p.token, p.lexeme);
+                            linkedPolishL.PushNodePolish(p.token, p.lexeme);
                             p = p.Next;
                             Initialize();
                         }
@@ -312,7 +312,7 @@ namespace Compiler
                 if (p != null && p.token == 100) // Id
                 {
                     //Added for incompatibility of types and U2
-                    PushNodePolish(p.token, p.lexeme);
+                    linkedPolishL.PushNodePolish(p.token, p.lexeme);
                     p = p.Next;
 
                     //if (p != null && p.token == 128)
@@ -349,7 +349,7 @@ namespace Compiler
                 if (p != null && (p.token == 126 || p.token == 100 || p.token == 240)) // String or Variable or Endl
                 {
                     //Added for incompatibility of types and U2
-                    PushNodePolish(tempToken, p.lexeme);
+                    linkedPolishL.PushNodePolish(tempToken, p.lexeme);
                     p = p.Next;
                     if (p != null && p.token == 127)//<<
                     {
@@ -401,7 +401,7 @@ namespace Compiler
                     || p.token == 102/*decimal*/ || p.token == 225/*true*/
                     || p.token == 226/*false*/)
                 {
-                    PushNodePolish(p.token, p.lexeme);
+                    linkedPolishL.PushNodePolish(p.token, p.lexeme);
                     p = p.Next;
                     if (p != null && (p.token == 103/*+*/ || p.token == 104/*-*/
                         || p.token == 105/* * */ || p.token == 106/* / */))
@@ -412,7 +412,7 @@ namespace Compiler
                             || ((p.token == 103 || p.token == 104) && (nodes.Peek().token == 105 || nodes.Peek().token == 106)))
                         {
                             Node tempPNode = nodes.Pop();
-                            PushNodePolish(tempPNode.token, tempPNode.lexeme);
+                            linkedPolishL.PushNodePolish(tempPNode.token, tempPNode.lexeme);
                             nodes.Push(p);
                             p = p.Next;
                             Operations();
@@ -458,7 +458,7 @@ namespace Compiler
                     if (IsDeclared(p.lexeme))
                     {
                         //Added for incompatibility of types and U2
-                        PushNodePolish(p.token, p.lexeme);
+                        linkedPolishL.PushNodePolish(p.token, p.lexeme);
                         p = p.Next;
                         if (p != null && (p.token == 107/*>*/ || p.token == 108/*>=*/ || p.token == 109/*<*/
                                || p.token == 110/*<=*/ || p.token == 111/*==*/ || p.token == 112/*<>*/ || p.token == 113 /*||*/
@@ -472,13 +472,13 @@ namespace Compiler
                         || p.token == 226/*false*/ || p.token == 100/*variable*/))
                             {
                                 //Added for incompatibility of types and U2
-                                PushNodePolish(p.token, p.lexeme);
+                                linkedPolishL.PushNodePolish(p.token, p.lexeme);
                                 p = p.Next;
                                 if (p != null && p.token == 117/*)*/)
                                 {
                                     //Added for incompatibility of types and U2
                                     PopNodesToPolishList();
-                                    PushNodePolish(213, "BRF-P");
+                                    linkedPolishL.PushNodePolish(213, "BRF-P");
                                     p = p.Next;
                                     if (p != null && p.token == 129/*{*/)
                                     {
@@ -488,7 +488,7 @@ namespace Compiler
                                             Block();
                                             if (p != null && p.token == 130/*}*/)
                                             {
-                                                PushNodePolish(232, "BRI-Q");
+                                                linkedPolishL.PushNodePolish(232, "BRI-Q");
                                                 p = p.Next;
                                                 if (p != null && p.token == 232)/*else*/
                                                 {
@@ -582,7 +582,7 @@ namespace Compiler
                     if (IsDeclared(p.lexeme))
                     {
                         //Added for incompatibility of types and U2
-                        PushNodePolish(p.token, p.lexeme);
+                        linkedPolishL.PushNodePolish(p.token, p.lexeme);
 
                         p = p.Next;
                         if (p != null && (p.token == 107/*>*/ || p.token == 108/*>=*/ || p.token == 109/*<*/
@@ -595,13 +595,13 @@ namespace Compiler
                         || p.token == 102/*decimal*/ || p.token == 225/*true*/
                         || p.token == 226/*false*/ || p.token == 100))
                             {
-                                PushNodePolish(p.token, p.lexeme);
+                                linkedPolishL.PushNodePolish(p.token, p.lexeme);
                                 p = p.Next;
                                 if (p != null && p.token == 117/*)*/)
                                 {
                                     //Added for incompatibility of types and U2
                                     PopNodesToPolishList();
-                                    PushNodePolish(227, "BRF-T");
+                                    linkedPolishL.PushNodePolish(227, "BRF-T");
                                     p = p.Next;
                                     if (p != null && p.token == 129/*{*/)
                                     {
@@ -614,7 +614,7 @@ namespace Compiler
                                                 if (p != null && p.token == 130/*}*/)
                                                 {
                                                     p = p.Next;
-                                                    PushNodePolish(227, "BRI-S");
+                                                    linkedPolishL.PushNodePolish(227, "BRI-S");
                                                 }
                                                 else
                                                 {
@@ -798,20 +798,20 @@ namespace Compiler
                 pV = node;
             }
         }
-        public void PushNodePolish(int type, string lexeme)
-        {
-            NodePolish node = new NodePolish(lexeme, type);
-            if (headP == null)
-            {
-                headP = node;
-                pP = headP;
-            }
-            else
-            {
-                pP.Next = node;
-                pP = node;
-            }
-        }
+        //public void PushNodePolish(int type, string lexeme)
+        //{
+        //    LinkedPolishList node = new LinkedPolishList(lexeme, type);
+        //    if (headP == null)
+        //    {
+        //        headP = node;
+        //        pP = headP;
+        //    }
+        //    else
+        //    {
+        //        pP.Next = node;
+        //        pP = node;
+        //    }
+        //}
         public void PrintVariableNodes()
         {
             Console.WriteLine("-----------------------------------------");
@@ -848,22 +848,22 @@ namespace Compiler
             while (nodes.Count > 0)
             {
                 tempNode = nodes.Pop();
-                PushNodePolish(tempNode.token, tempNode.lexeme);
+                linkedPolishL.PushNodePolish(tempNode.token, tempNode.lexeme);
             }
         }
         //Added for incompatibility of types and U2
-        public void PrintPolishNodes()
-        {
-            Console.WriteLine("-----------------------------------------");
-            Console.WriteLine("Polish list");
-            Console.WriteLine("-----------------------------------------");
-            pP = headP;
-            while (pP != null)
-            {
-                Console.WriteLine("|Type {0,0}| Lexeme {1,0}|", pP.type, pP.lexeme);
-                pP = pP.Next;
-            }
-        }
+        //public void PrintPolishNodes()
+        //{
+        //    Console.WriteLine("-----------------------------------------");
+        //    Console.WriteLine("Polish list");
+        //    Console.WriteLine("-----------------------------------------");
+        //    pP = headP;
+        //    while (pP != null)
+        //    {
+        //        Console.WriteLine("|Type {0,0}| Lexeme {1,0}|", pP.type, pP.lexeme);
+        //        pP = pP.Next;
+        //    }
+        //}
         //Added for incompatibility of types
     }
 }
