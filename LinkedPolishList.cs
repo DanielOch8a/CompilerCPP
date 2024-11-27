@@ -52,5 +52,27 @@ namespace Compiler
                 current = current.Next;
             }
         }
+
+        public void TypesAsignation(NodeVariableList variableList)
+        {
+            Node current = head;
+            NodeVariableList currentVariableList = variableList;
+            while (current != null)
+            {
+                currentVariableList = variableList;
+                while (currentVariableList != null)
+                {
+                    if(current.lexeme == currentVariableList.lexeme)
+                    {
+                        current.type = currentVariableList.type;
+
+                    }
+                    currentVariableList = currentVariableList.Next;
+                }
+                
+                current = current.Next;
+            }
+        }
+
     }
 }

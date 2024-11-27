@@ -115,6 +115,7 @@ namespace Compiler
                 }
 
                 PrintVariableNodes();
+                linkedPolishL.TypesAsignation(headV);
                 linkedPolishL.PrintPolishNodes();
             }
             else
