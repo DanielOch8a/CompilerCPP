@@ -114,9 +114,23 @@ namespace Compiler
                     PrintError("reserved word main");
                 }
 
-                PrintVariableNodes();
+                if (syntaxError == false)
+                {
+                    PrintVariableNodes();
+                }
                 linkedPolishL.TypesAsignation(headV);
-                linkedPolishL.PrintPolishNodes();
+                if(linkedPolishL.CheckCompatibility().errorValue == 508)
+                {
+                    errorValue = 508;
+                    PrintErrorMessage();
+                    Console.WriteLine("|"+linkedPolishL.CheckCompatibility().op1 + "| and |" + linkedPolishL.CheckCompatibility().op2+"| No son tipos compatibles.");
+                    syntaxError = true;
+                }
+                if(syntaxError == false)
+                {
+                    linkedPolishL.PrintPolishNodes();
+                }
+
             }
             else
             {
@@ -204,7 +218,7 @@ namespace Compiler
                         else
                         {
                             errorValue = 506;
-                            PrintErrorMessage(p.lexeme, p.row);
+                            PrintErrorMessageWithLexeme(p.lexeme, p.row);
                             syntaxError = true;
                         }
                         break;
@@ -250,7 +264,7 @@ namespace Compiler
                         else
                         {
                             errorValue = 507;
-                            PrintErrorMessage(tempLexeme, tempNumRow);
+                            PrintErrorMessageWithLexeme(tempLexeme, tempNumRow);
                             syntaxError = true;
                         }
                         p = p.Next;
@@ -265,7 +279,7 @@ namespace Compiler
                         else
                         {
                             errorValue = 507;
-                            PrintErrorMessage(tempLexeme, tempNumRow);
+                            PrintErrorMessageWithLexeme(tempLexeme, tempNumRow);
                             syntaxError = true;
                         }
                         p = p.Next;
@@ -302,6 +316,7 @@ namespace Compiler
                     pV.Next = null;
                 }
                 PrintError("Variable name");
+                syntaxError = true;
             }
         }
 
@@ -332,7 +347,7 @@ namespace Compiler
                     else
                     {
                         errorValue = 506;
-                        PrintErrorMessage(p.lexeme, p.row);
+                        PrintErrorMessageWithLexeme(p.lexeme, p.row);
                         syntaxError = true;
                     }
                     
@@ -397,7 +412,7 @@ namespace Compiler
                     else
                     {
                         errorValue = 506;
-                        PrintErrorMessage(p.lexeme, p.row);
+                        PrintErrorMessageWithLexeme(p.lexeme, p.row);
                         syntaxError = true;
                     }
                     
@@ -474,7 +489,7 @@ namespace Compiler
                 else
                 {
                     errorValue = 506;
-                    PrintErrorMessage(p.lexeme, p.row);
+                    PrintErrorMessageWithLexeme(p.lexeme, p.row);
                     syntaxError = true;
                 }
             }
@@ -593,7 +608,7 @@ namespace Compiler
                     else
                     {
                         errorValue = 506;
-                        PrintErrorMessage(p.lexeme, p.row);
+                        PrintErrorMessageWithLexeme(p.lexeme, p.row);
                         syntaxError = true;
                     }
                 }
@@ -687,7 +702,7 @@ namespace Compiler
                     else
                     {
                         errorValue = 506;
-                        PrintErrorMessage(p.lexeme, p.row);
+                        PrintErrorMessageWithLexeme(p.lexeme, p.row);
                         syntaxError = true;
                     }
                 }
@@ -720,10 +735,23 @@ namespace Compiler
         //      0                                 1
         {"Error Variable no declarada",           "506"},
         {"Error Variable Multideclarada"  ,       "507"},
-        {"Error de incompatibilidad"    ,         "508"},
+        {"Error de incompatibilidad de tipos",    "508"},
+        {"Error Signo desconocido o incompatible","509"},
     };
 
-        private void PrintErrorMessage(string lexeme, int numLine)
+        private void PrintErrorMessage()
+        {
+            for (int i = 0; i < errors.GetLength(0); i++)
+            {
+                if (errorValue == Convert.ToInt32(errors[i, 1]))
+                {
+                    Console.WriteLine("ERROR " + errorValue + ": " +
+                                errors[i, 0] + " |");
+                    break;
+                }
+            }
+        }
+        private void PrintErrorMessageWithLexeme(string lexeme, int numLine)
         {
             for (int i = 0; i < errors.GetLength(0); i++)
             {
@@ -735,38 +763,6 @@ namespace Compiler
                 }
             }
         }
-
-
-        // OPERATIONS
-        /*SISTEMA DE TIPOS*/
-        // COLUMNS
-        //         218 (int)    229 (real)    239 (string)    220 (char)    225 (bool)
-        int[,] matrizTypesPlus = {
-    // +,     int,real,string,char,bool
-    /*int*/   { 1,    1,   0,   0,   0 },
-    /*real*/  { 1,    1,   0,   0,   0 },
-    /*string*/{ 0,    0,   1,   239,   508 },
-    /*char*/  { 0,    0,   239,   239,   508 },
-    /*bool*/  { 0,    0,   508,   508,   508 },
-        };
-        int[,] matrizTypesMinus = {
-/* int - */    { 218,        229,        508,          508,          508 },
-/* real - */   { 229,        229,        508,          508,          508 },
-/* string - */ { 508,        508,        508,          508,          508 },
-/* char - */   { 508,        508,        508,          508,          508 },
-/* bool - */   { 508,        508,        508,          508,          508 }, };
-        int[,] matrizTypesMultiplication = {
-/* int * */    { 218,        229,        508,          508,          508 },
-/* real * */   { 229,        229,        508,          508,          508 },
-/* string * */ { 508,        508,        508,          508,          508 },
-/* char * */   { 508,        508,        508,          508,          508 },
-/* bool * */   { 508,        508,        508,          508,          508 }, };
-        int[,] matrizTypesDivition = {
-/* int / */    { 229,        229,        508,          508,          508 },
-/* real / */   { 229,        229,        508,          508,          508 },
-/* string / */ { 508,        508,        508,          508,          508 },
-/* char / */   { 508,        508,        508,          508,          508 },
-/* bool / */   { 508,        508,        508,          508,          508 }, };
 
         /*SISTEMA DE RELACIONALES*/
         int[,] matrizTypesEquality = {
@@ -793,12 +789,6 @@ namespace Compiler
 /* string > */ { 508,        508,        508,          508,          508 },
 /* char > */   { 508,        508,        508,          508,          508 },
 /* bool > */   { 508,        508,        508,          508,          508 }, };
-        int[,] matrizTypesAsignation = {
-/* int = */    { 218,        508,        508,          508,          508 },
-/* real = */   { 229,        229,        508,          508,          508 },
-/* string = */ { 508,        508,        239,          239,          508 },
-/* char = */   { 508,        508,        508,          220,          508 },
-/* bool = */   { 508,        508,        508,          508,          225 }, };
 
         /*OPERADORES LOGICOS*/
         int[,] matrizTypesAND = {
