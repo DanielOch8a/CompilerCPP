@@ -11,6 +11,8 @@ namespace Compiler
     {
         private Node head;
         private Node tail;
+
+        /*Basic Operations System*/
         private int[,] matrizTypesAsignation = {
         // COLUMNS
         //         0           1           2             3             4
@@ -47,6 +49,32 @@ namespace Compiler
 /* string / */ { 0,        0,        0,          0,          0 },
 /* char / */   { 0,        0,        0,          0,          0 },
 /* bool / */   { 0,        0,        0,          0,          0 }, };
+
+        /*Relacionals System*/
+        int[,] matrizTypesEquality = {
+/* int == */    { 1,        0,        0,          0,          0 },
+/* real == */   { 0,        1,        0,          0,          0 },
+/* string == */ { 0,        0,        1,          1,          0 },
+/* char == */   { 0,        0,        1,          1,          0 },
+/* bool == */   { 0,        0,        0,          0,          1 }, };
+        int[,] matrizTypesInequality = {
+/* int <> */    { 1,      0,        0,          0,          0 },
+/* real <> */   { 0,        1,        0,          0,          0 },
+/* string <> */ { 0,        0,        1,          1,          0 },
+/* char <> */   { 0,        0,        1,          1,          0 },
+/* bool <> */   { 0,        0,        0,          0,          1 }, };
+        int[,] matrizTypesGreaterThan = {
+/* int < */    { 1,        1,        0,          0,          0 },
+/* real < */   { 1,        1,        0,          0,          0 },
+/* string < */ { 0,        0,        0,          0,          0 },
+/* char < */   { 0,        0,        0,          0,          0 },
+/* bool < */   { 0,        0,        0,          0,          0 }, };
+        int[,] matrizTypesLessThan = {
+/* int > */    { 1,        1,        0,          0,          0 },
+/* real > */   { 1,        1,        0,          0,          0 },
+/* string > */ { 0,        0,        0,          0,          0 },
+/* char > */   { 0,        0,        0,          0,          0 },
+/* bool > */   { 0,        0,        0,          0,          0 }, };
 
 
         public class Node
@@ -140,7 +168,10 @@ namespace Compiler
                 {
                     stack.Push(current);
                 }
-                else
+                else if(current.type == 123 /* = */ || current.type == 103 /* + */ || current.type == 104 /* - */
+                    || current.type == 105 /* * */ || current.type == 106 /* / */ || current.type == 107 /* > */
+                    || current.type == 108 /* >= */ || current.type == 109 /*<*/ || current.type == 110 /*<=*/
+                    || current.type == 111 /*==*/ || current.type == 112 /*==*/)
                 {
                     tempOp2 = stack.Pop();
                     tempOp1 = stack.Pop();
@@ -246,6 +277,66 @@ namespace Compiler
                             }
                             temp = tempOp2;
                             stack.Push(temp);
+                            break;
+                        case 107:/* > */
+                            mtvalue = matrizTypesGreaterThan[op1, op2];
+                            if (mtvalue == 0)
+                            {
+                                returnnode.op2 = tempOp2.lexeme;
+                                returnnode.op1 = tempOp1.lexeme;
+                                returnnode.errorValue = 508;
+                                return returnnode;
+                            }
+                            break;
+                        case 108:/* >= */
+                            mtvalue = matrizTypesGreaterThan[op1, op2];
+                            if (mtvalue == 0)
+                            {
+                                returnnode.op2 = tempOp2.lexeme;
+                                returnnode.op1 = tempOp1.lexeme;
+                                returnnode.errorValue = 508;
+                                return returnnode;
+                            }
+                            break;
+                        case 109:/* < */
+                            mtvalue = matrizTypesLessThan[op1, op2];
+                            if (mtvalue == 0)
+                            {
+                                returnnode.op2 = tempOp2.lexeme;
+                                returnnode.op1 = tempOp1.lexeme;
+                                returnnode.errorValue = 508;
+                                return returnnode;
+                            }
+                            break;
+                        case 110:/* <= */
+                            mtvalue = matrizTypesLessThan[op1, op2];
+                            if (mtvalue == 0)
+                            {
+                                returnnode.op2 = tempOp2.lexeme;
+                                returnnode.op1 = tempOp1.lexeme;
+                                returnnode.errorValue = 508;
+                                return returnnode;
+                            }
+                            break;
+                        case 111:/* == */
+                            mtvalue = matrizTypesEquality[op1, op2];
+                            if (mtvalue == 0)
+                            {
+                                returnnode.op2 = tempOp2.lexeme;
+                                returnnode.op1 = tempOp1.lexeme;
+                                returnnode.errorValue = 508;
+                                return returnnode;
+                            }
+                            break;
+                        case 112:/* <> */
+                            mtvalue = matrizTypesInequality[op1, op2];
+                            if (mtvalue == 0)
+                            {
+                                returnnode.op2 = tempOp2.lexeme;
+                                returnnode.op1 = tempOp1.lexeme;
+                                returnnode.errorValue = 508;
+                                return returnnode;
+                            }
                             break;
                         default:
                             returnnode.errorValue = 509;
