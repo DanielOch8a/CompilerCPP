@@ -14,14 +14,13 @@ namespace Compiler
 
         /*Basic Operations System*/
         private int[,] matrizTypesAsignation = {
-        // COLUMNS
-        //         0           1           2             3             4
-        //        218 (int)   229 (real)  239 (string)  220 (char)    206 (bool)
-/*0 int = */    { 1,              0,        0,          0,          0 },
-/*1 real = */   { 1,              1,        0,          0,          0 },
-/*2 string = */ { 0,              0,        1,          1,          0 },
-/*3 char = */   { 0,              0,        0,          1,          0 },
-/*4 bool = */   { 0,              0,        0,          0,          1 }, };
+        //         0  1  2       3    4
+        // +,   int real string char bool
+/*0 int = */    { 1,  0,  0,      0,  0 },
+/*1 real = */   { 1,  1,  0,      0,  0 },
+/*2 string = */ { 0,  0,  1,      1,  0 },
+/*3 char = */   { 0,  0,  0,      1,  0 },
+/*4 bool = */   { 0,  0,  0,      0,  1 }, };
         private int[,] matrizTypesPlus = {
     // +,     int,real,string,char,bool
     /*int*/   { 1,    1,   0,   0,   0 },
@@ -38,43 +37,43 @@ namespace Compiler
 /* char - */   { 0,   0,   0,     0,   0 },
 /* bool - */   { 0,   0,   0,     0,   0 }, };
         private int[,] matrizTypesMultiplication = {
-/* int * */    { 1,        1,        0,          0,          0 },
-/* real * */   { 1,        1,        0,          0,          0 },
-/* string * */ { 0,        0,        0,          0,          0 },
-/* char * */   { 0,        0,        0,          0,          0 },
-/* bool * */   { 0,        0,        0,          0,          0 }, };
+/* int * */    { 1,  1,  0,  0,  0 },
+/* real * */   { 1,  1,  0,  0,  0 },
+/* string * */ { 0,  0,  0,  0,  0 },
+/* char * */   { 0,  0,  0,  0,  0 },
+/* bool * */   { 0,  0,  0,  0,  0 }, };
         private int[,] matrizTypesDivition = {
-/* int / */    { 1,        1,        0,          0,          0 },
-/* real / */   { 1,        1,        0,          0,          0 },
-/* string / */ { 0,        0,        0,          0,          0 },
-/* char / */   { 0,        0,        0,          0,          0 },
-/* bool / */   { 0,        0,        0,          0,          0 }, };
+/* int / */    { 1,  1,  0,  0,  0 },
+/* real / */   { 1,  1,  0,  0,  0 },
+/* string / */ { 0,  0,  0,  0,  0 },
+/* char / */   { 0,  0,  0,  0,  0 },
+/* bool / */   { 0,  0,  0,  0,  0 }, };
 
         /*Relacionals System*/
         int[,] matrizTypesEquality = {
-/* int == */    { 1,        0,        0,          0,          0 },
-/* real == */   { 0,        1,        0,          0,          0 },
-/* string == */ { 0,        0,        1,          1,          0 },
-/* char == */   { 0,        0,        1,          1,          0 },
-/* bool == */   { 0,        0,        0,          0,          1 }, };
+/* int == */    { 1,  0,  0,  0,  0 },
+/* real == */   { 0,  1,  0,  0,  0 },
+/* string == */ { 0,  0,  1,  1,  0 },
+/* char == */   { 0,  0,  1,  1,  0 },
+/* bool == */   { 0,  0,  0,  0,  1 }, };
         int[,] matrizTypesInequality = {
-/* int <> */    { 1,      0,        0,          0,          0 },
-/* real <> */   { 0,        1,        0,          0,          0 },
-/* string <> */ { 0,        0,        1,          1,          0 },
-/* char <> */   { 0,        0,        1,          1,          0 },
-/* bool <> */   { 0,        0,        0,          0,          1 }, };
+/* int <> */    { 1,  0,   0,  0,  0},
+/* real <> */   { 0,  1,   0,  0,  0},
+/* string <> */ { 0,  0,   1,  1,  0},
+/* char <> */   { 0,  0,   1,  1,  0},
+/* bool <> */   { 0,  0,   0,  0,  1}, };
         int[,] matrizTypesGreaterThan = {
-/* int < */    { 1,        1,        0,          0,          0 },
-/* real < */   { 1,        1,        0,          0,          0 },
-/* string < */ { 0,        0,        0,          0,          0 },
-/* char < */   { 0,        0,        0,          0,          0 },
-/* bool < */   { 0,        0,        0,          0,          0 }, };
+/* int < */     { 1,  1,  0,  0,  0 },
+/* real < */    { 1,  1,  0,  0,  0 },
+/* string < */  { 0,  0,  0,  0,  0 },
+/* char < */    { 0,  0,  0,  0,  0 },
+/* bool < */    { 0,  0,  0,  0,  0 }, };
         int[,] matrizTypesLessThan = {
-/* int > */    { 1,        1,        0,          0,          0 },
-/* real > */   { 1,        1,        0,          0,          0 },
-/* string > */ { 0,        0,        0,          0,          0 },
-/* char > */   { 0,        0,        0,          0,          0 },
-/* bool > */   { 0,        0,        0,          0,          0 }, };
+/* int > */     { 1,  1,  0,  0,  0 },
+/* real > */    { 1,  1,  0,  0,  0 },
+/* string > */  { 0,  0,  0,  0,  0 },
+/* char > */    { 0,  0,  0,  0,  0 },
+/* bool > */    { 0,  0,  0,  0,  0 }, };
 
 
         public class Node
