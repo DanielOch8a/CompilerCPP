@@ -118,6 +118,7 @@ namespace Compiler
                 {
                     PrintVariableNodes();
                 }
+
                 linkedPolishL.TypesAsignation(headV);
                 if(linkedPolishL.CheckCompatibility().errorValue == 508)
                 {
@@ -126,6 +127,7 @@ namespace Compiler
                     Console.WriteLine("|"+linkedPolishL.CheckCompatibility().op1 + "| and |" + linkedPolishL.CheckCompatibility().op2+"| No son tipos compatibles.");
                     syntaxError = true;
                 }
+
                 if(syntaxError == false)
                 {
                     linkedPolishL.PrintPolishNodes();
@@ -536,20 +538,26 @@ namespace Compiler
                                         p = p.Next;
                                         if (p != null && ValidateStatement())
                                         {
-                                            Block();
+                                            while (p != null && !syntaxError && p.token != 130)
+                                            {
+                                                Block();
+                                            }
                                             if (p != null && p.token == 130/*}*/)
                                             {
                                                 linkedPolishL.PushNodePolish(232, "BRI-Q");
                                                 p = p.Next;
                                                 if (p != null && p.token == 232)/*else*/
                                                 {
-                                                    if (p != null && p.Next.token == 129/*{*/)
+                                                    p = p.Next;
+                                                    if (p != null && p.token == 129/*{*/)
                                                     {
-                                                        p = p.Next;
                                                         p = p.Next;
                                                         if (p != null && ValidateStatement())
                                                         {
-                                                            Block();
+                                                            while (p != null && !syntaxError && p.token != 130)
+                                                            {
+                                                                Block();
+                                                            }
                                                             if (p != null && p.token == 130/*}*/)
                                                             {
                                                                 Console.WriteLine("|If statement closed on line {0,-2} |", p.row);
@@ -573,6 +581,10 @@ namespace Compiler
                                                     {
                                                         PrintError("Opening brace else");
                                                     }
+                                                }
+                                                else
+                                                {
+                                                    PrintError("Else");
                                                 }
                                             }
                                             else
@@ -659,7 +671,10 @@ namespace Compiler
                                         p = p.Next;
                                         if (p != null && ValidateStatement())
                                         {
-                                            Block();
+                                            while (p != null && !syntaxError && p.token != 130)
+                                            {
+                                                Block();
+                                            }
                                             if (!syntaxError)
                                             {
                                                 if (p != null && p.token == 130/*}*/)

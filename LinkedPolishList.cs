@@ -184,7 +184,7 @@ namespace Compiler
                     {
                         op2 = 1;
                     }
-                    else if (op2 == 239 || op2 == 123)/*string, cadena*/
+                    else if (op2 == 239 || op2 == 126)/*string, cadena*/
                     {
                         op2 = 2;
                     }
@@ -205,7 +205,7 @@ namespace Compiler
                     {
                         op1 = 1;
                     }
-                    else if (op1 == 239 || op1 == 123)/*string, cadena*/
+                    else if (op1 == 239 || op1 == 126)/*string, cadena*/
                     {
                         op1 = 2;
                     }
