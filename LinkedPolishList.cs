@@ -368,7 +368,7 @@ namespace Compiler
             }
         }
 
-        private LinkedList<QuadrupleNode> quadrupleNodes = new LinkedList<QuadrupleNode>();
+        public LinkedList<QuadrupleNode> quadrupleNodes = new LinkedList<QuadrupleNode>();
 
         public void ConvertPolishToQuadruple()
         {
@@ -401,7 +401,9 @@ namespace Compiler
                     quadrupleNodes.AddLast(quadrupleNode);
                 }
                 else if (current != null && (current.type == 103/*+*/ || current.type == 104/*-*/
-                        || current.type == 105/* * */ || current.type == 106/* / */))
+                        || current.type == 105/* * */ || current.type == 106/* / */ || current.type == 107/*>*/ || current.type == 108/*>=*/ || current.type == 109/*<*/
+                               || current.type == 110/*<=*/ || current.type == 111/*==*/ || current.type == 112/*<>*/ || current.type == 113 /*||*/
+                               || current.type == 114 /*&&*/ || current.type == 115 /*!*/))
                 {
                     arg2 = nodesStack.Pop().lexeme;
                     arg1 = nodesStack.Pop().lexeme;
@@ -429,10 +431,30 @@ namespace Compiler
                     QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg1, " ", " ");
                     quadrupleNodes.AddLast(quadrupleNode);
                 }
+                else if (current != null && (current.lexeme == "BRF-P" || current.lexeme == "BRF-T"))//BRF
+                {
+                    arg1 = nodesStack.Pop().lexeme;
+                    result = current.lexeme.Substring(current.lexeme.Length - 1);
+
+                    op = current.lexeme;
+                    QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg1, " ", result);
+                    quadrupleNodes.AddLast(quadrupleNode);
+                }
+                else if (current != null && (current.lexeme == "BRI-Q" || current.lexeme == "BRI-S"))//BRI
+                {
+                    result = current.lexeme.Substring(current.lexeme.Length - 1);
+
+                    op = current.lexeme;
+                    QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, " ", " ", result);
+                    quadrupleNodes.AddLast(quadrupleNode);
+                }
                 current = current.Next;
             }
 
-            Console.WriteLine("{0,-10} {1,-5} {2,-10} {3,-10} {4,-10}", "Pointer", "Op", "Arg1", "Arg2", "Result");
+            Console.WriteLine("\n+---------------+Quadruples+---------------+");
+            Console.WriteLine("+---------+----+---------+---------+---------+");
+            Console.WriteLine("{0,-10} {1,-5} {2,-10} {3,-10} {4,-10}", "Pointer", "Op", "Op1", "Op2", "Result");
+            Console.WriteLine("+---------+----+---------+---------+---------+");
             foreach (var item in quadrupleNodes)
             {
                 Console.WriteLine("{0,-10} {1,-5} {2,-10} {3,-10} {4,-10}", item.pointer, item.op, item.arg1, item.arg2, item.result);
