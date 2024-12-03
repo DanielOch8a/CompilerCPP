@@ -133,6 +133,8 @@ namespace Compiler
                     linkedPolishL.PrintPolishNodes();
                 }
 
+                linkedPolishL.ConvertPolishToQuadruple();
+
             }
             else
             {

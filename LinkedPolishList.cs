@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
@@ -346,6 +347,96 @@ namespace Compiler
             }
             returnnode.errorValue = 0;
             return returnnode;
+        }
+
+        public class QuadrupleNode
+        {
+
+            public string pointer { get; set; }
+            public string op { get; set; }
+            public string arg1 { get; set; }
+            public string arg2 { get; set; }
+            public string result { get; set; }
+
+            public QuadrupleNode(string pointer, string op, string arg1, string arg2, string result)
+            {
+                this.pointer = pointer;
+                this.op = op;
+                this.arg1 = arg1;
+                this.arg2 = arg2;
+                this.result = result;
+            }
+        }
+
+        private LinkedList<QuadrupleNode> quadrupleNodes = new LinkedList<QuadrupleNode>();
+
+        public void ConvertPolishToQuadruple()
+        {
+            Node current = head;
+            Node tempNode;
+            Stack<Node> nodesStack = new Stack<Node>();
+            string pointer = "null";
+            string op;
+            string arg1;
+            string arg2;
+            string result;
+
+            string temp = "temp";
+            int numTemp = 1;
+            while (current != null)
+            {
+                if(current != null && (current.type == 126 /*string*/ || current.type == 101/*digit*/
+                        || current.type == 102/*decimal*/ || current.type == 225/*true*/
+                        || current.type == 226/*false*/ || current.type == 100/*variable*/ || current.type == 206 /*bool*/ || current.type == 212 /*double*/ || current.type == 218 /*int*/
+                        || current.type == 220 /*char*/ || current.type == 229 /*float*/ || current.type == 239/*string*/ /*data types*/))
+                {
+                    nodesStack.Push(current);
+                }else if ((current != null && current.type == 123/* = */))
+                {
+                    arg2 = nodesStack.Pop().lexeme;
+                    result = nodesStack.Pop().lexeme;
+
+                    op = current.lexeme;
+                    QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg2, " ", result);
+                    quadrupleNodes.AddLast(quadrupleNode);
+                }
+                else if (current != null && (current.type == 103/*+*/ || current.type == 104/*-*/
+                        || current.type == 105/* * */ || current.type == 106/* / */))
+                {
+                    arg2 = nodesStack.Pop().lexeme;
+                    arg1 = nodesStack.Pop().lexeme;
+
+                    tempNode = new Node(temp + numTemp,100);
+                    nodesStack.Push(tempNode);
+                    op = current.lexeme;
+                    QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg1, arg2, temp + numTemp);
+                    numTemp++;
+                    quadrupleNodes.AddLast(quadrupleNode);
+                }
+                else if (current != null && (current.type == 234))//cin
+                {
+                    result = nodesStack.Pop().lexeme;
+
+                    op = current.lexeme;
+                    QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, " ", " ", result);
+                    quadrupleNodes.AddLast(quadrupleNode);
+                }
+                else if (current != null && (current.type == 235))//cout
+                {
+                    arg1 = nodesStack.Pop().lexeme;
+
+                    op = current.lexeme;
+                    QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg1, " ", " ");
+                    quadrupleNodes.AddLast(quadrupleNode);
+                }
+                current = current.Next;
+            }
+
+            Console.WriteLine("{0,-10} {1,-5} {2,-10} {3,-10} {4,-10}", "Pointer", "Op", "Arg1", "Arg2", "Result");
+            foreach (var item in quadrupleNodes)
+            {
+                Console.WriteLine("{0,-10} {1,-5} {2,-10} {3,-10} {4,-10}", item.pointer, item.op, item.arg1, item.arg2, item.result);
+            }
         }
     }
 }
