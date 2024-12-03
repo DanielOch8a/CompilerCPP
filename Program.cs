@@ -10,6 +10,8 @@ namespace Compiler
 {
     internal class Program
     {
+        //public LinkedList<LinkedPolishList.QuadrupleNode> quadruples = new LinkedList<LinkedPolishList.QuadrupleNode>();
+
         static void Main(string[] args)
         {
             Lexical lexical = new Lexical();
@@ -36,8 +38,14 @@ namespace Compiler
                 Console.WriteLine("Syntax Analyzer Finished");
             }
 
+            ToAsmCode converterAsmCode = new ToAsmCode();
+            converterAsmCode.quadruples = syntatic.linkedPolishL.quadrupleNodes;
+            converterAsmCode.headV = syntatic.headV;
+            converterAsmCode.AsmCode();
+            converterAsmCode.PrintAsmCode();
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
+
 
         }
     }
