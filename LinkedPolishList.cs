@@ -450,7 +450,10 @@ namespace Compiler
                 }
                 current = current.Next;
             }
+        }
 
+        public void PrintQuadruple()
+        {
             Console.WriteLine("\n+---------------+Quadruples+---------------+");
             Console.WriteLine("+---------+----+---------+---------+---------+");
             Console.WriteLine("{0,-10} {1,-5} {2,-10} {3,-10} {4,-10}", "Pointer", "Op", "Op1", "Op2", "Result");

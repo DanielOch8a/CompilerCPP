@@ -134,6 +134,7 @@ namespace Compiler
                 }
 
                 linkedPolishL.ConvertPolishToQuadruple();
+                linkedPolishL.PrintQuadruple();
 
             }
             else
