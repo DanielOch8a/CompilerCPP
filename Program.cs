@@ -39,10 +39,13 @@ namespace Compiler
             }
 
             ToAsmCode converterAsmCode = new ToAsmCode();
-            converterAsmCode.quadruples = syntatic.linkedPolishL.quadrupleNodes;
-            converterAsmCode.headV = syntatic.headV;
-            converterAsmCode.AsmCode();
-            converterAsmCode.PrintAsmCode();
+            if (!syntatic.syntaxError)
+            {
+                converterAsmCode.quadruples = syntatic.linkedPolishL.quadrupleNodes;
+                converterAsmCode.headV = syntatic.headV;
+                converterAsmCode.AsmCode();
+                converterAsmCode.PrintAsmCode();
+            }
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
 
