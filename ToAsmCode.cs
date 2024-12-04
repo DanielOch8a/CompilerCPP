@@ -18,23 +18,23 @@ namespace Compiler
 
         public void AsmCode()
         {
-            NodeVariableList current = headV;
+            NodeVariableList currentV = headV;
 
             asmCode += ";/StartHeader\r\nINCLUDE macros.mac\r\nDOSSEG\r\n.MODEL SMALL\r\n.STACK 100h\r\n.DATA";
-            while (current != null)
+            while (currentV != null)
             {
-                switch (current.type)
+                switch (currentV.type)
                 {
                     case 218://int
-                        asmCode = asmCode + "\r\n\t\t\t" + current.lexeme + " dw ?" ;
+                        asmCode = asmCode + "\r\n\t\t\t" + currentV.lexeme + " db ?" ;
                         break;
                     case 239://string
-                        asmCode = asmCode + "\r\n\t\t\t" + current.lexeme + " db 64 DUP(?)";
+                        asmCode = asmCode + "\r\n\t\t\t" + currentV.lexeme + " db 64 DUP(?)";
                         break;
                     default:
                         break;
                 }
-                current = current.Next;
+                currentV = currentV.Next;
             }
 
             asmCode += "\r\n.CODE\r\n.386\r\nBEGIN:\r\n            MOV     AX, _DATA\r\n            MOV     DS, AX\r\nCALL  COMPI\r\n            MOV AX, 4C00H\r\n            INT 21H\r\nCOMPI  PROC\r\n";
@@ -45,37 +45,37 @@ namespace Compiler
                 switch (item.op)
                 {
                     case "="://=
-                        current = headV;
-                        while (current != null)
+                        currentV = headV;
+                        while (currentV != null)
                         {
-                            if ((item.result == current.lexeme) && current.type == 218)
+                            if ((item.result == currentV.lexeme) && currentV.type == 218)
                             {
-                                asmCode += "\r\n\tI_ASIGNAR MACRO " + item.arg1 + ", " + item.result;
+                                asmCode += "\r\n\tI_ASIGNAR " + item.result + ", " + item.arg1;
                             }
-                            else if ((item.result == current.lexeme) && current.type == 239)
+                            else if ((item.result == currentV.lexeme) && currentV.type == 239)
                             {
-                                asmCode += "\r\n\tS_ASIGNAR MACRO " + item.arg1 + ", " + item.result;
+                                asmCode += "\r\n\tS_ASIGNAR " + item.result + ", " + item.arg1;
                             }
-                            current = current.Next;
+                            currentV = currentV.Next;
                         }
                         break;
                     case "+":
-                        asmCode += "\r\n\tSUMAR MACRO " + item.arg1 + ", " + item.arg2 + ", "+item.result;
+                        asmCode += "\r\n\tSUMAR " + item.arg1 + ", " + item.arg2 + ", "+item.result;
                         break;
                     case "-":
-                        asmCode += "\r\n\tRESTA MACRO " + item.arg1 + ", " + item.arg2 + ", " + item.result;
+                        asmCode += "\r\n\tRESTA " + item.arg1 + ", " + item.arg2 + ", " + item.result;
                         break;
                     case "*":
-                        asmCode += "\r\n\tMULTI MACRO " + item.arg1 + ", " + item.arg2 + ", " + item.result;
+                        asmCode += "\r\n\tMULTI " + item.arg1 + ", " + item.arg2 + ", " + item.result;
                         break;
                     case "/":
-                        asmCode += "\r\n\tDIVIDE MACRO " + item.arg1 + ", " + item.arg2 + ", " + item.result;
+                        asmCode += "\r\n\tDIVIDE " + item.arg1 + ", " + item.arg2 + ", " + item.result;
                         break;
                     case "cin":
-                        asmCode += "\r\n\tREAD  MACRO " + item.result;
+                        asmCode += "\r\n\tREAD " + item.result;
                         break;
                     case "cout":
-                        asmCode += "\r\n\tWRITE     MACRO " + item.arg1;
+                        asmCode += "\r\n\tWRITE " + item.arg1;
                         break;
                     default:
                         break;
