@@ -12,6 +12,8 @@ namespace Compiler
     {
         private Node head;
         private Node tail;
+        public NodeVariableList headTempV = null;
+        public NodeVariableList pTempV = null;
 
         /*Basic Operations System*/
         private int[,] matrizTypesAsignation = {
@@ -410,6 +412,7 @@ namespace Compiler
 
                     tempNode = new Node(temp + numTemp,100);
                     nodesStack.Push(tempNode);
+                    PushNodeVariable(218, temp + numTemp);
                     op = current.lexeme;
                     QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg1, arg2, temp + numTemp);
                     numTemp++;
@@ -452,6 +455,20 @@ namespace Compiler
             }
         }
 
+        public void PushNodeVariable(int type, string lexeme)
+        {
+            NodeVariableList node = new NodeVariableList(type, lexeme);
+            if (headTempV == null)
+            {
+                headTempV = node;
+                pTempV = headTempV;
+            }
+            else
+            {
+                pTempV.Next = node;
+                pTempV = node;
+            }
+        }
         public void PrintQuadruple()
         {
             Console.WriteLine("\n+---------------+Quadruples+---------------+");

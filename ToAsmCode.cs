@@ -13,12 +13,14 @@ namespace Compiler
     {
         public LinkedList<LinkedPolishList.QuadrupleNode> quadruples { get; set; }
         public NodeVariableList headV { get; set; }
+        public NodeVariableList headTempV { get; set; }
 
         private string asmCode = "";
 
         public void AsmCode()
         {
             NodeVariableList currentV = headV;
+            NodeVariableList currentTempV = headTempV;
 
             asmCode += ";/StartHeader\r\nINCLUDE macros.mac\r\nDOSSEG\r\n.MODEL SMALL\r\n.STACK 100h\r\n.DATA";
             while (currentV != null)
@@ -35,6 +37,22 @@ namespace Compiler
                         break;
                 }
                 currentV = currentV.Next;
+            }
+
+            while (currentTempV != null)
+            {
+                switch (currentTempV.type)
+                {
+                    case 218://int
+                        asmCode = asmCode + "\r\n\t\t\t" + currentTempV.lexeme + " db ?";
+                        break;
+                    case 239://string
+                        asmCode = asmCode + "\r\n\t\t\t" + currentTempV.lexeme + " db 64 DUP(?)";
+                        break;
+                    default:
+                        break;
+                }
+                currentTempV = currentTempV.Next;
             }
 
             asmCode += "\r\n.CODE\r\n.386\r\nBEGIN:\r\n            MOV     AX, _DATA\r\n            MOV     DS, AX\r\nCALL  COMPI\r\n            MOV AX, 4C00H\r\n            INT 21H\r\nCOMPI  PROC\r\n";

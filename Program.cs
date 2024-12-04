@@ -43,6 +43,7 @@ namespace Compiler
             {
                 converterAsmCode.quadruples = syntatic.linkedPolishL.quadrupleNodes;
                 converterAsmCode.headV = syntatic.headV;
+                converterAsmCode.headTempV = syntatic.linkedPolishL.headTempV;
                 converterAsmCode.AsmCode();
                 converterAsmCode.PrintAsmCode();
             }
