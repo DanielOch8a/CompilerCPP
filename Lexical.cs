@@ -19,6 +19,7 @@ namespace Compiler
         int caracter = 0;
         string lexemeBuilding = "";
         public bool foundedError = false;
+        string pointer;
 
         string fileUbication = ".\\codigo1_erroresBasicos.txt";
 
@@ -326,7 +327,7 @@ namespace Compiler
 
         private void PushNode()
         {
-            Node Node = new Node(lexemeBuilding, mtValue, numrow);
+            Node Node = new Node(pointer,lexemeBuilding, mtValue, numrow);
             if (Head == null)
             {
                 Head = Node;

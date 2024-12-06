@@ -81,12 +81,14 @@ namespace Compiler
 
         public class Node
         {
+            public string pointer { get; set; }
             public string lexeme { get; set; }
             public int type { get; set; }
             public Node Next { get; set; }
 
-            public Node(string lexeme, int type)
+            public Node(string pointer, string lexeme, int type)
             {
+                this.pointer = pointer;
                 this.lexeme = lexeme;
                 this.type = type;
             }
@@ -105,9 +107,9 @@ namespace Compiler
             }
         }
 
-        public void PushNodePolish(int type, string lexeme)
+        public void PushNodePolish(string pointer,int type, string lexeme)
         {
-            Node newNode = new Node(lexeme, type);
+            Node newNode = new Node(pointer, lexeme, type);
             if (head == null)
             {
                 head = newNode;
@@ -128,7 +130,7 @@ namespace Compiler
             Node current = head;
             while (current != null)
             {
-                Console.WriteLine("|Type {0,0}| Lexeme {1,0}|", current.type, current.lexeme);
+                Console.WriteLine("|Pointer {0,0}| |Type {1,0}| Lexeme {2,0}|",current.pointer, current.type, current.lexeme);
                 current = current.Next;
             }
         }
@@ -377,7 +379,7 @@ namespace Compiler
             Node current = head;
             Node tempNode;
             Stack<Node> nodesStack = new Stack<Node>();
-            string pointer = "null";
+            string pointer = null;
             string op;
             string arg1;
             string arg2;
@@ -385,21 +387,31 @@ namespace Compiler
 
             string temp = "temp";
             int numTemp = 1;
+            int numTempPointerP = 1;
+            int numTempPointerQ = 1;
+            int numTempPointerT = 1;
+            int numTempPointerS = 1;
             while (current != null)
             {
+
                 if(current != null && (current.type == 126 /*string*/ || current.type == 101/*digit*/
                         || current.type == 102/*decimal*/ || current.type == 225/*true*/
                         || current.type == 226/*false*/ || current.type == 100/*variable*/ || current.type == 206 /*bool*/ || current.type == 212 /*double*/ || current.type == 218 /*int*/
                         || current.type == 220 /*char*/ || current.type == 229 /*float*/ || current.type == 239/*string*/ /*data types*/))
                 {
                     nodesStack.Push(current);
-                }else if ((current != null && current.type == 123/* = */))
+                    if(pointer == null)
+                    {
+                        pointer = current.pointer;
+                    }
+                }
+                else if ((current != null && current.type == 123/* = */))
                 {
                     arg2 = nodesStack.Pop().lexeme;
                     result = nodesStack.Pop().lexeme;
-
                     op = current.lexeme;
                     QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg2, " ", result);
+                    pointer = null;
                     quadrupleNodes.AddLast(quadrupleNode);
                 }
                 else if (current != null && (current.type == 103/*+*/ || current.type == 104/*-*/
@@ -409,12 +421,12 @@ namespace Compiler
                 {
                     arg2 = nodesStack.Pop().lexeme;
                     arg1 = nodesStack.Pop().lexeme;
-
-                    tempNode = new Node(temp + numTemp,100);
+                    tempNode = new Node(null, temp + numTemp, 100);
                     nodesStack.Push(tempNode);
                     PushNodeVariable(218, temp + numTemp);
                     op = current.lexeme;
                     QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg1, arg2, temp + numTemp);
+                    pointer = null;
                     numTemp++;
                     quadrupleNodes.AddLast(quadrupleNode);
                 }
@@ -429,27 +441,53 @@ namespace Compiler
                 else if (current != null && (current.type == 235))//cout
                 {
                     arg1 = nodesStack.Pop().lexeme;
-
                     op = current.lexeme;
                     QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg1, " ", " ");
                     quadrupleNodes.AddLast(quadrupleNode);
                 }
                 else if (current != null && (current.lexeme == "BRF-P" || current.lexeme == "BRF-T"))//BRF
                 {
-                    arg1 = nodesStack.Pop().lexeme;
-                    result = current.lexeme.Substring(current.lexeme.Length - 1);
+                    if(current.lexeme == "BRF-P")
+                    {
+                        arg1 = nodesStack.Pop().lexeme;
+                        result = current.lexeme.Substring(current.lexeme.Length - 1) + numTempPointerP;
+                        numTempPointerP++;
 
-                    op = current.lexeme;
-                    QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg1, " ", result);
-                    quadrupleNodes.AddLast(quadrupleNode);
+                        op = current.lexeme;
+                        QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg1, " ", result);
+                        quadrupleNodes.AddLast(quadrupleNode);
+                    }
+                    else if (current.lexeme == "BRF-T")
+                    {
+                        arg1 = nodesStack.Pop().lexeme;
+                        result = current.lexeme.Substring(current.lexeme.Length - 1) + numTempPointerT;
+                        numTempPointerT++;
+
+                        op = current.lexeme;
+                        QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, arg1, " ", result);
+                        quadrupleNodes.AddLast(quadrupleNode);
+                    }
                 }
                 else if (current != null && (current.lexeme == "BRI-Q" || current.lexeme == "BRI-S"))//BRI
                 {
-                    result = current.lexeme.Substring(current.lexeme.Length - 1);
+                    if(current.lexeme == "BRI-Q")
+                    {
+                        result = current.lexeme.Substring(current.lexeme.Length - 1) + numTempPointerQ;
+                        numTempPointerQ++;
 
-                    op = current.lexeme;
-                    QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, " ", " ", result);
-                    quadrupleNodes.AddLast(quadrupleNode);
+                        op = current.lexeme;
+                        QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, " ", " ", result);
+                        quadrupleNodes.AddLast(quadrupleNode);
+                    }else if(current.lexeme == "BRI-S")
+                    {
+                        result = current.lexeme.Substring(current.lexeme.Length - 1) + numTempPointerS;
+                        numTempPointerS++;
+
+                        op = current.lexeme;
+                        QuadrupleNode quadrupleNode = new QuadrupleNode(pointer, op, " ", " ", result);
+                        quadrupleNodes.AddLast(quadrupleNode);
+                    }
+                    
                 }
                 current = current.Next;
             }
