@@ -518,5 +518,31 @@ namespace Compiler
                 Console.WriteLine("{0,-10} {1,-5} {2,-10} {3,-10} {4,-10}", item.pointer, item.op, item.arg1, item.arg2, item.result);
             }
         }
+        public void RemoveInactiveCode()
+        {
+            if (quadrupleNodes.Count < 2)
+                return;
+
+            LinkedListNode<QuadrupleNode> prevQuadrupleNode = quadrupleNodes.First;
+            LinkedListNode<QuadrupleNode> currentQuadrupleNode = prevQuadrupleNode.Next;
+
+            while (currentQuadrupleNode != null)
+            {
+                QuadrupleNode prevQuadruple = prevQuadrupleNode.Value;
+                QuadrupleNode currentQuadruple = currentQuadrupleNode.Value;
+
+                if (prevQuadruple.op == "=" && currentQuadruple.op == "=" && prevQuadruple.result == currentQuadruple.result)
+                {
+                    quadrupleNodes.Remove(prevQuadrupleNode);
+                    prevQuadrupleNode = currentQuadrupleNode;
+                    currentQuadrupleNode = currentQuadrupleNode.Next;
+                }
+                else
+                {
+                    prevQuadrupleNode = currentQuadrupleNode;
+                    currentQuadrupleNode = currentQuadrupleNode.Next;
+                }
+            }
+        }
     }
 }
