@@ -27,7 +27,7 @@ namespace Compiler
             NodeVariableList currentV = headV;
             NodeVariableList currentTempV = headTempV;
 
-            asmCode += ";/StartHeader\r\nINCLUDE macrosc.mac\r\n.MODEL SMALL\r\n.STACK 100h\r\n.DATA\r\n\t\t\t\r\n\t\t\tLISTAPAR    LABEL BYTE";
+            asmCode += "\r\nINCLUDE macrosc.mac\r\n.MODEL SMALL\r\n.STACK 100h\r\n.DATA\r\n\t\t\t";
             while (currentV != null)
             {
                 switch (currentV.type)
@@ -177,6 +177,32 @@ namespace Compiler
                             asmCode += temporalPointer;
                         }
                         asmCode += "\r\n\tI_MAYORIGUAL\t" + item.arg1 + ", " + item.arg2 + ", " + item.result;
+                        break;
+                    case "==":
+                        if (item.pointer != null)
+                        {
+                            temporalPointer = "\r\n" + temporalPointer2 + ":";
+                            if (item.pointer == "S")
+                            {
+                                temporalPointer += "\r\n" + item.pointer + temporalCont + ":";
+                                temporalCont++;
+                            }
+                            asmCode += temporalPointer;
+                        }
+                        asmCode += "\r\n\tI_IGUAL\t" + item.arg1 + ", " + item.arg2 + ", " + item.result;
+                        break;
+                    case "<>":
+                        if (item.pointer != null)
+                        {
+                            temporalPointer = "\r\n" + temporalPointer2 + ":";
+                            if (item.pointer == "S")
+                            {
+                                temporalPointer += "\r\n" + item.pointer + temporalCont + ":";
+                                temporalCont++;
+                            }
+                            asmCode += temporalPointer;
+                        }
+                        asmCode += "\r\n\tI_DIFERENTES\t" + item.arg1 + ", " + item.arg2 + ", " + item.result;
                         break;
                     case "BRF-P":
                         asmCode += "\r\n\tJF\t" + item.arg1 + ", " + item.result;
